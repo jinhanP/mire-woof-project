@@ -14,8 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
@@ -57,23 +55,25 @@ public class PetController {
 	}
 
 	@GetMapping("/getPetList")
-	public String getPetList(Pet pet, Model model, PageRequest pageRequest, Pagination pagination, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
-		
+	public String getPetList(Pet pet, Model model, PageRequest pageRequest, Pagination pagination) throws Exception {
 		// 분양 신청 권한 표시
+		// @AuthenticationPrincipal UserDetails userDetails
 //		if(null!=userDetails) {
 //			String authList = userDetails.getAuthorities().toString();
 //			model.addAttribute("authList", authList);
 //		};
-
+		// null인 경우 이 줄은 이를 빈 문자열로 기본값 설정
 		if (null == pageRequest.getKeyword()) {
 			pageRequest.setKeyword("");
 		}
 
 		pageRequest.setSizePerPage(9);
 		pagination.setPageRequest(pageRequest);
-//		log.info("getPetList().size() : "+service.getPetList().size());
+//		log.info("getPetList().size() : "+service.getPetList().size()); 
+		//service.countPetList 총 애완동물 수를 계산
 		pagination.setTotalCount(service.countPetList(pageRequest));
 		log.info("pagination : " + pagination.toString());
+		//검색된 애완동물 목록이 모델에 추가되어 뷰에 표시
 		model.addAttribute("pagination", pagination);
 		List<Pet> petList = service.getPetList(pageRequest);
 		model.addAttribute("petList", petList);
@@ -149,6 +149,7 @@ public class PetController {
 		return "pet/modifyPet";
 	}
 
+	//수정 및 업로드된 이미지 처리를 담당
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@PostMapping("/modifyPet")
 	public String modify(Pet pet, Model model) throws Exception {
@@ -233,7 +234,8 @@ public class PetController {
 		}
 		return entity;
 	}
-
+	
+	//파일 형식을 MediaType으로 매핑: 이 방법은 일반적인 이미지 파일 형식 이름(예: "JPG", "GIF", "PNG")을 다양한 웹 프레임워크 및 라이브러리에서 미디어 유형을 나타내는 데 사용되는 해당 MediaType 개체로 변환합니다.
 	private MediaType getMediaType(String formatName) {
 //		log.info("getMediaType()");
 		if (formatName != null) {

@@ -54,7 +54,6 @@ public class ReviewController {
 	public String getReview(Review review, Model model, Principal principal, Account account) throws Exception {
 		if (null != principal) {
 			account.setUsername(principal.getName());
-//			log.info(principal.getName());
 			model.addAttribute(account);
 		}
 		Review review_ = service.getReview(review);
@@ -68,14 +67,6 @@ public class ReviewController {
 		service.getReview(review);
 	}
 
-//	@RequestMapping(value = "/getReviewList")
-//	public String getReviewList(Review review, Model model) throws Exception {
-//		log.info("getReviewList");
-//		List<Review> reviewList = service.getReviewList();
-//		model.addAttribute("reviewList", reviewList);
-//		log.info(reviewList.toString());
-//		return "pet/petReviewList";
-//	}
 	
 	@GetMapping("/getReviewList")
 	public String getReviewList(Model model,PageRequest pageRequest,Pagination pagination) throws Exception{
@@ -91,7 +82,7 @@ public class ReviewController {
 			pageRequest.setKeyword("");
 		}
 		
-		//검색 정보 null check
+		//검색 조건 정보 null check
 		switch (pageRequest.getCondition()) {
 		case "TITLE":{
 			pageRequest.setKeywordTitle(pageRequest.getKeyword());
@@ -115,7 +106,7 @@ public class ReviewController {
 		return "pet/petReviewList";
 	}
 	
-//	내정보
+//	내정보 Principal인증된 사용자의 정보를 나타내는 객체
 	@GetMapping("/insertReviewForm")
 	public String ReviewForm(Review review, Model model, Principal principal) throws Exception {
 		log.info("myAccountForm");
@@ -151,7 +142,7 @@ public class ReviewController {
 		}
 		log.info("reviewtoString : "+review.toString());
 		
-//////////////////////////////// 반복문 샘플 작성
+		// 반복문 샘플 작성
 //		String title =review.getReviewTitle();
 //		for(int i=0;i<30;i++) {
 //		review.setReviewTitle(title+i);

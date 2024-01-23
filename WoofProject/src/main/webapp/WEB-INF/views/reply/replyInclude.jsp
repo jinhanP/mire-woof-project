@@ -59,7 +59,7 @@
 				}
 		});
 	}
-	
+	/* 응답에 대한 페이지 정보 */
 	function pagination(idx){
 		
 		var pageRequest = {
@@ -92,7 +92,7 @@
 				}
 			});
 		}
-	
+	/* 리뷰에 대한 페이지가 매겨진 답변 목록 */
 	function replyList(idx){
 		var pageRequest = {
 				page : idx,
@@ -135,7 +135,7 @@
 		});
 	}
 	
-	
+	/* 새 응답을 제출합니다. 제출 후 회신 텍스트 영역을 지웁니다. */
 	function replyRegist(){
 		var reply = {
 				username : $("#username").val(),

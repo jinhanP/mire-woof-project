@@ -53,7 +53,7 @@
 		${authList}
 		<section style="display: flex; flex-wrap: wrap; gap: 6rem;">
 			<c:forEach var="pet" items="${petList}">
-			
+				
 				<div class="card" style="width: 21rem;">
 					<a href="getPet?petNo=${pet.petNo}">
 					<img src="getPetMainPic?petNo=${pet.petNo}" class="card-img-top"	alt="Pet"></a>
