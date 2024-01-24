@@ -102,8 +102,6 @@ a {
 										<td><fmt:formatDate pattern="yyyy-MM-dd"
 												value="${pet.petRegDate}" /></td>
 									</tr>
-
-
 								</tbody>
 							</table>
 							<table>

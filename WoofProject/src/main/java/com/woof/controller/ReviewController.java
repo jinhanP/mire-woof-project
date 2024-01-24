@@ -67,34 +67,32 @@ public class ReviewController {
 		service.getReview(review);
 	}
 
-	
 	@GetMapping("/getReviewList")
-	public String getReviewList(Model model,PageRequest pageRequest,Pagination pagination) throws Exception{
+	public String getReviewList(Model model, PageRequest pageRequest, Pagination pagination) throws Exception {
 		log.info("getReviewList");
-		
-//		pagination.setDisplayPageNum(5);
+
 		pageRequest.setSizePerPage(8);
-		
-		if(pageRequest.getCondition() == null) {
+
+		if (pageRequest.getCondition() == null) {
 			pageRequest.setCondition("TITLE");
 		}
-		if(pageRequest.getKeyword() == null) {
+		if (pageRequest.getKeyword() == null) {
 			pageRequest.setKeyword("");
 		}
-		
-		//검색 조건 정보 null check
+
+		// 검색 조건 정보 null check
 		switch (pageRequest.getCondition()) {
-		case "TITLE":{
+		case "TITLE": {
 			pageRequest.setKeywordTitle(pageRequest.getKeyword());
 			pageRequest.setKeywordDesc("");
 			break;
 		}
-		case "CONTENT":{
+		case "CONTENT": {
 			pageRequest.setKeywordDesc(pageRequest.getKeyword());
 			pageRequest.setKeywordTitle("");
 			break;
 		}
-		}
+	}
 		pageRequest.setSizePerPage(8);
 		log.info(pageRequest.toString());
 		pagination.setPageRequest(pageRequest);
@@ -102,10 +100,10 @@ public class ReviewController {
 		model.addAttribute("pagination", pagination);
 		List<Review> reviewList = service.getReviewList(pageRequest);
 		model.addAttribute("reviewList", reviewList);
-		
+
 		return "pet/petReviewList";
 	}
-	
+
 //	내정보 Principal인증된 사용자의 정보를 나타내는 객체
 	@GetMapping("/insertReviewForm")
 	public String ReviewForm(Review review, Model model, Principal principal) throws Exception {
@@ -124,8 +122,8 @@ public class ReviewController {
 	@PostMapping("/insertReview")
 	public String insertReview(Review review) throws Exception {
 		log.info("/insertReview POST");
-		log.info("/insertReview POST : "+review.toString());
-		if(null==review.getItemName()) {
+		log.info("/insertReview POST : " + review.toString());
+		if (null == review.getItemName()) {
 			review.setItemName("");
 		}
 		List<MultipartFile> pictures = review.getPictures();
@@ -140,20 +138,20 @@ public class ReviewController {
 			}
 
 		}
-		log.info("reviewtoString : "+review.toString());
-		
+		log.info("reviewtoString : " + review.toString());
+
 		// 반복문 샘플 작성
 //		String title =review.getReviewTitle();
 //		for(int i=0;i<30;i++) {
 //		review.setReviewTitle(title+i);
 //		service.insertReview(review);
 //		}
-		
+
 		service.insertReview(review);
-		if(review.getItemNo()>0) {
-			 return "redirect:/orderHistory/getOrderHistoryList";
+		if (review.getItemNo() > 0) {
+			return "redirect:/orderHistory/getOrderHistoryList";
 		}
-		
+
 		return "redirect:/review/getReviewList";
 	}
 
@@ -165,6 +163,7 @@ public class ReviewController {
 		FileCopyUtils.copy(fileData, target);
 		return savedName;
 	}
+
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MEMBER')")
 	@GetMapping("/modifyReview")
 	public String modifyReivew(Review reivew, Model model) throws Exception {
@@ -175,16 +174,17 @@ public class ReviewController {
 //		log.info("model add attribute");
 		return "pet/modifyPetReview";
 	}
+
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MEMBER')")
 	@PostMapping("/modifyReview")
-	public String modify(Review review,Model model)throws Exception{
+	public String modify(Review review, Model model) throws Exception {
 		log.info("/modifyReview POST");
 		List<MultipartFile> pictures = review.getPictures();
-		for(int i = 0; i < pictures.size(); i++) {
+		for (int i = 0; i < pictures.size(); i++) {
 			MultipartFile file = pictures.get(i);
-			if(file != null && file.getSize() > 0) {
+			if (file != null && file.getSize() > 0) {
 				String savedName = uploadFile(file.getOriginalFilename(), file.getBytes());
-				if(i == 0) {
+				if (i == 0) {
 					review.setReviewPic(savedName);
 				}
 			}
@@ -193,16 +193,15 @@ public class ReviewController {
 		model.addAttribute("수정이 완료 되었습니다.");
 		return "redirect:/review/getReviewList";
 	}
+
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MEMBER')")
 	@GetMapping(value = "/deleteReview")
-	public String deleteReview(Review review,Model model) throws Exception{
+	public String deleteReview(Review review, Model model) throws Exception {
 		this.service.deleteReview(review);
 		return "redirect:/review/getReviewList";
 	}
-	
-	
-	
-	//----------------------------사진 업로드----------------------------------
+
+	// ----------------------------사진 업로드----------------------------------
 
 	@ResponseBody
 	@GetMapping("/getReviewPic")
@@ -228,7 +227,7 @@ public class ReviewController {
 		}
 		return entity;
 	}
-	
+
 	private MediaType getMediaType(String formatName) {
 //		log.info("getMediaType()");
 		if (formatName != null) {
@@ -244,10 +243,9 @@ public class ReviewController {
 		}
 		return null;
 	}
-	
-	
-	//===================================AJAX
-	
+
+	// ===================================AJAX
+
 	@PutMapping(value = "/getItemReviewList")
 	public ResponseEntity<List> getItemReviewList(@RequestBody PageRequest pageRequest, Pagination pagination)
 			throws Exception {
@@ -267,7 +265,7 @@ public class ReviewController {
 		}
 		return entity;
 	}
-	
+
 	@PutMapping(value = "/getItemReviewPagination")
 	public ResponseEntity<List> getItemReviewPagination(@RequestBody PageRequest pageRequest, Pagination pagination)
 			throws Exception {
@@ -284,18 +282,19 @@ public class ReviewController {
 		ResponseEntity<List> entity = new ResponseEntity<List>(pageList, HttpStatus.OK);
 		return entity;
 	}
-	
+
 	@PutMapping("/deleteReviewAjax")
 	public ResponseEntity<List> deleteReviewAjax(@RequestBody Review review) throws Exception {
 		service.deleteReview(review);
 		ResponseEntity<List> entity = null;
 		return entity;
 	}
-	
+
 	@PostMapping("/insertItemReviewForm")
-	public String insertItemReviewForm(Model model, Principal principal, Account account,Review review) throws Exception {
+	public String insertItemReviewForm(Model model, Principal principal, Account account, Review review)
+			throws Exception {
 		log.info("insertItemReviewForm");
-		log.info("review : " +review.toString());
+		log.info("review : " + review.toString());
 		if (null != principal) {
 			account.setUsername(principal.getName());
 			log.info(principal.getName());
@@ -304,7 +303,7 @@ public class ReviewController {
 		}
 		return "item/insertItemReview";
 	}
-	
+
 	@PostMapping("/insertItemReview")
 	public String insertItemReview() {
 		log.info("insertItemReview");
